@@ -4,17 +4,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { Header } from '../../components/Header';
 import { Loading } from '../../components/Loading';
+import { Modal } from '../../components/Modal';
 import { Table } from '../../components/Table';
 import { ROUTES } from '../../constants/routes';
 import { API_ERROR_MESSAGES } from '../../api/constants';
 import { getApiErrorMessage } from '../../api/errors';
+import { deleteCar } from '../../api/cars/deleteCar';
 import { getCars } from '../../api/cars/getCars';
 import type { Car } from '../../api/cars/types';
 import { getOwner } from '../../api/owners/getOwner';
 import type { OwnerSummary } from '../../api/owners/types';
 
 import { carColumns } from './constants';
-import { Actions, Wrapper } from './styles';
+import { Actions, TableActions, Wrapper } from './styles';
 import type { CarTableRow } from './types';
 
 export const OwnerCars = () => {
@@ -25,6 +27,9 @@ export const OwnerCars = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [carToDelete, setCarToDelete] = useState<Car | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     let isCurrentRequest = true;
@@ -102,6 +107,38 @@ export const OwnerCars = () => {
     };
   }, [selectedOwnerId]);
 
+  const handleDeleteCar = (car: Car) => {
+  setCarToDelete(car);
+};
+
+const closeDeleteModal = () => {
+  setCarToDelete(null);
+};
+
+const confirmDeleteCar = async () => {
+  if (!carToDelete || isDeleting) {
+    return;
+  }
+
+  setIsDeleting(true);
+  setDeleteError('');
+
+  try {
+    await deleteCar(carToDelete.id);
+
+    setCars((currentCars) =>
+      currentCars.filter((car) => car.id !== carToDelete.id)
+    );
+
+    setCarToDelete(null);
+  } catch (error) {
+    console.error('Could not delete car:', error);
+    setDeleteError('Could not delete car. Please try again.');
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
   if (isLoading) {
     return <Loading message="Loading owner cars..." />;
   }
@@ -132,8 +169,9 @@ export const OwnerCars = () => {
   }
 
   const tableData: CarTableRow[] = cars.map((car) => ({
-    ...car,
-    actions: (
+  ...car,
+  actions: (
+    <TableActions>
       <Button
         type="button"
         variant="secondary"
@@ -142,8 +180,18 @@ export const OwnerCars = () => {
       >
         View more
       </Button>
-    ),
-  }));
+
+      <Button
+        type="button"
+        variant="secondary"
+        data-testid={`delete-owner-car-${car.id}`}
+        onClick={() => handleDeleteCar(car)}
+      >
+        Delete
+      </Button>
+    </TableActions>
+  ),
+}));
 
   return (
     <div data-testid="owner-cars-page">
@@ -183,6 +231,28 @@ export const OwnerCars = () => {
         data={tableData}
         emptyMessage="No cars found for this owner."
       />
+      <Modal
+  isOpen={carToDelete !== null}
+  title="Delete car"
+  description={
+  deleteError ||
+  `Are you sure you want to delete the car with VIN ${
+    carToDelete?.vin ?? ''
+  }?`
+} 
+  data-testid="delete-owner-car-modal"
+  onClose={closeDeleteModal}
+  secondaryCta={{
+  label: 'Cancel',
+  disabled: isDeleting,
+  onClick: closeDeleteModal,
+}}
+ primaryCta={{
+  label: isDeleting ? 'Deleting...' : 'Yes',
+  disabled: isDeleting,
+  onClick: confirmDeleteCar,
+}}
+/>
     </div>
   );
 };

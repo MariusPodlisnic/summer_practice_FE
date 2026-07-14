@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target:
-          'http://ec2-63-178-240-141.eu-central-1.compute.amazonaws.com',
+          'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },

@@ -23,6 +23,7 @@ export const API_ERROR_MESSAGES = {
   ADD_OWNER: 'Could not create owner. Please try again.',
   GET_ACTIVE_POLICY: 'Failed to fetch active policy.',
   GET_CAR: 'Could not load car details. Please try again.',
+  DELETE_CAR: 'Could not delete car. Please try again.',
   GET_CAR_CATEGORIES: 'Could not load car categories.',
   GET_CAR_HISTORY: 'Failed to fetch policy data.',
   GET_CARS: 'Could not load cars.',

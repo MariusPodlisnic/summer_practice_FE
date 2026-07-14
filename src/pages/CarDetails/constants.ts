@@ -23,6 +23,10 @@ export const EMPTY_CATEGORY_OPTION: SelectOption = {
   label: 'Select emission category',
   value: '',
 };
+export const EMPTY_OWNER_OPTION: SelectOption = {
+  label: 'Select an owner',
+  value: '',
+};
 
 export const EMISSION_CATEGORY_LABEL = 'Emission category';
 

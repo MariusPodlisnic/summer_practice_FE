@@ -7,10 +7,11 @@ import type {
   SaveCarPayload,
 } from '../../api/cars/types';
 import type { SelectOption } from '../../types/common';
-
+import type { Owner } from '../../api/owners/types';
 import {
   DEFAULT_CLAIM_FORM_VALUES,
   EMPTY_CATEGORY_OPTION,
+  EMPTY_OWNER_OPTION,
 } from './constants';
 import type {
   AddPolicyFormValues,
@@ -56,6 +57,21 @@ export const getCarCategoryOptions = (
 /**
  * Adds the selected category to dropdown options when loaded car data has a category outside the fetched list.
  */
+/**
+ * Converts API owners into dropdown options.
+ */
+
+export const getOwnerOptions = (
+  owners: Owner[]
+): SelectOption[] => [
+  EMPTY_OWNER_OPTION,
+  ...owners.map((owner) => ({
+    label: owner.email
+      ? `${owner.name} (${owner.email})`
+      : owner.name,
+    value: owner.id,
+  })),
+];
 export const getCategoryFieldOptions = (
   category: string,
   categoryOptions: SelectOption[]

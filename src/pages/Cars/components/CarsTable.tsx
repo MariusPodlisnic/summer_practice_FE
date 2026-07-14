@@ -8,6 +8,7 @@ import {
   CAR_PAGE_SIZE_OPTIONS,
   carColumns,
 } from '../constants';
+import { TableActions } from '../styles';
 import type {
   CarsFilters,
   CarsTableRow,
@@ -23,17 +24,26 @@ interface CarsTableProps {
   makeOptions: SelectOption[];
   modelOptions: SelectOption[];
   pagination: TablePaginationState;
+
   onFilterChange: (
     filterName: keyof CarsFilters,
     value: string | string[]
   ) => void;
-  onPaginationChange: (pagination: TablePaginationState) => void;
+
+  onPaginationChange: (
+    pagination: TablePaginationState
+  ) => void;
+
   onRetry: () => void;
+
+  onDeleteCar: (car: Car) => void;
+
   onViewCar: (car: Car) => void;
 }
 
 /**
- * Renders the Cars table with page-specific columns, filters, and actions.
+ * Renders the Cars table with page-specific columns,
+ * filters, and actions.
  */
 export const CarsTable = ({
   cars,
@@ -45,6 +55,7 @@ export const CarsTable = ({
   makeOptions,
   modelOptions,
   pagination,
+  onDeleteCar,
   onFilterChange,
   onPaginationChange,
   onRetry,
@@ -52,19 +63,35 @@ export const CarsTable = ({
 }: CarsTableProps) => {
   const tableData: CarsTableRow[] = cars.map((car) => ({
     ...car,
+
     ownerName: car.owner.name,
+
     actions: (
-      <Button
-        type="button"
-        variant="secondary"
-        data-testid={`view-car-${car.id}`}
-        onClick={(event) => {
-          event.stopPropagation();
-          onViewCar(car);
-        }}
-      >
-        View
-      </Button>
+      <TableActions>
+        <Button
+          type="button"
+          variant="secondary"
+          data-testid={`view-car-${car.id}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onViewCar(car);
+          }}
+        >
+          View
+        </Button>
+
+        <Button
+          type="button"
+          variant="secondary"
+          data-testid={`delete-car-${car.id}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteCar(car);
+          }}
+        >
+          Delete
+        </Button>
+      </TableActions>
     ),
   }));
 
@@ -88,7 +115,8 @@ export const CarsTable = ({
           value: filters.make,
           options: makeOptions,
           showAllOption: true,
-          onChange: (value) => onFilterChange('make', value),
+          onChange: (value) =>
+            onFilterChange('make', value),
         },
         {
           columnKey: 'model',
@@ -98,7 +126,8 @@ export const CarsTable = ({
           value: filters.model,
           options: modelOptions,
           showAllOption: true,
-          onChange: (value) => onFilterChange('model', value),
+          onChange: (value) =>
+            onFilterChange('model', value),
         },
         {
           columnKey: 'category',
