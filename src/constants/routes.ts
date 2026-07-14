@@ -1,5 +1,6 @@
 export const ROUTE_PATHS = {
   HOME: '/',
+  DASHBOARD: '/dashboard',
   OWNERS: '/',
   ADD_OWNER: '/owners/add',
   OWNER_CARS: '/owners/:ownerId/cars',
@@ -11,6 +12,7 @@ export const ROUTE_PATHS = {
 
 export const ROUTES = {
   HOME: '/',
+  DASHBOARD: '/dashboard',
   OWNERS: '/',
   ADD_OWNER: '/owners/add',
   OWNER_CARS: (ownerId: number | string) =>

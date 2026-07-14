@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 
 import { Layout } from "./components/Layout";
+import { Dashboard } from "./pages/Dashboard";
 import { Owners } from "./pages/Owners";
 import { OwnerDetails } from "./pages/OwnerDetails";
 import { OwnerCars } from "./pages/OwnerCars";
@@ -36,6 +37,10 @@ function App() {
         onThemeToggle={toggleTheme}
       >
         <Routes>
+          <Route
+            path={ROUTE_PATHS.DASHBOARD}
+            element={<Dashboard />}
+          />
           <Route path={ROUTE_PATHS.OWNERS} element={<Owners />} />
           <Route
             path={ROUTE_PATHS.ADD_OWNER}
