@@ -24,7 +24,7 @@ export const Dashboard = () => {
         description="Overview of the car insurance application."
       />
 
-      <StatisticsGrid>
+      { <StatisticsGrid>
         {dashboardMockData.carsOwners.map((item) => {
           const details = getStatisticCardDetails(
             item.itemType
@@ -48,9 +48,9 @@ export const Dashboard = () => {
             />
           );
         })}
-      </StatisticsGrid>
+      </StatisticsGrid> }
 
-      <SummaryGrid>
+       <SummaryGrid>
         {dashboardMockData.categories.map((category) => {
           const details = getSummaryCardDetails(
             category.itemType
@@ -74,7 +74,7 @@ export const Dashboard = () => {
             />
           );
         })}
-      </SummaryGrid>
+      </SummaryGrid> 
     </DashboardContent>
   );
 };

@@ -11,7 +11,7 @@ export const useOwnersOptions = (ownerId: string, isViewMode:boolean) => {
   
     const [isLoadingOwners, setIsLoadingOwners] =
     useState(!isViewMode);
-   useEffect(() => {
+    useEffect(() => {
     if (isViewMode || ownerId) {
       return;
     }
@@ -25,10 +25,7 @@ export const useOwnersOptions = (ownerId: string, isViewMode:boolean) => {
       setIsLoadingOwners(true);
   
       try {
-        const ownersResponse = await getOwners({
-          page: 1,
-          per_page: 100,
-        });
+        const ownersResponse = await getOwners();
   
         if (!isCurrentRequest) {
           return;
@@ -55,7 +52,7 @@ export const useOwnersOptions = (ownerId: string, isViewMode:boolean) => {
     return () => {
       isCurrentRequest = false;
     };
-  }, [isViewMode,ownerId]);
+  }, [ownerId,isViewMode]);
   
   return {
     isLoadingOwners,
