@@ -5,6 +5,7 @@ import { ROUTE_PATHS } from '../../constants/routes';
 
 import { useCarsByCategory } from './hooks/useCarsByCategory';
 import { useDashboardStatistics } from './hooks/useDashboardStatistics';
+import { useOwnersByLicenseCategory } from './hooks/useOwnersByLicenseCategory';
 import {
   DashboardContent,
   StatisticsGrid,
@@ -26,7 +27,11 @@ export const Dashboard = () => {
     isLoading: isLoadingCarsByCategory,
     errorMessage: carsByCategoryError,
   } = useCarsByCategory();
-
+  const {
+    items: ownersByLicenseCategoryItems,
+    isLoading: isLoadingOwnersByLicenseCategory,
+    errorMessage: ownersByLicenseCategoryError,
+  } = useOwnersByLicenseCategory();
   const totalOwnersValue = isLoading
     ? '...'
     : statistics.totalOwners ?? '—';
@@ -41,6 +46,13 @@ export const Dashboard = () => {
         value: '...',
       }))
     : carsByCategoryItems;
+  const displayedOwnerCategoryItems =
+    isLoadingOwnersByLicenseCategory
+    ? ownersByLicenseCategoryItems.map((item) => ({
+        ...item,
+        value: '...',
+      }))
+    : ownersByLicenseCategoryItems;
 
   return (
     <DashboardContent data-testid="dashboard-page">
@@ -89,6 +101,12 @@ export const Dashboard = () => {
         <p role="alert">{carsByCategoryError}</p>
       )}
 
+      {ownersByLicenseCategoryError && (
+        <p role="alert">
+    {ownersByLicenseCategoryError}
+        </p>
+      )}
+
       <SummaryGrid>
         <SummaryCard
           title="Cars by Category"
@@ -96,6 +114,15 @@ export const Dashboard = () => {
           items={displayedCategoryItems}
           navigationLink={ROUTE_PATHS.CARS}
           data-testid="cars-by-category-card"
+
+          
+        />
+        <SummaryCard
+          title="Owners by Driver's Licence Category"
+          icon={<span>🪪</span>}
+          items={displayedOwnerCategoryItems}
+          navigationLink={ROUTE_PATHS.OWNERS}
+          data-testid="owners-by-license-category-card"
         />
       </SummaryGrid>
     </DashboardContent>
