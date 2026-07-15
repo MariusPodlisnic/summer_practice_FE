@@ -28,6 +28,7 @@ interface CarDetailsFormProps {
   ownerOptions: SelectOption[];
   isSubmissionInProgress: boolean;
   isViewMode: boolean;
+  ownerId?:string;
   onBack: () => void;
   onFieldChange: FieldChangeHandler<CarFormValues>;
   onSubmit: FormEventHandler<HTMLFormElement>;
@@ -46,6 +47,7 @@ export const CarDetailsForm = ({
   isSubmissionInProgress,
   isViewMode,
   ownerOptions,
+  ownerId,
   onBack,
   onFieldChange,
   onSubmit,
@@ -55,7 +57,7 @@ export const CarDetailsForm = ({
     onSubmit={onSubmit}
     noValidate
   >
-    {isViewMode ? (
+    {isViewMode || ownerId ? (
   <Input
     name="owner_id"
     label="Owner ID"

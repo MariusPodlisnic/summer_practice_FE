@@ -1,47 +1,22 @@
 import { Header } from '../../components/Header';
 import { StatisticCard } from '../../components/StatisticCard';
 import { SummaryCard } from '../../components/SummaryCard';
-import { ROUTE_PATHS } from '../../constants/routes';
 
-import { useCarsByCategory } from './hooks/useCarsByCategory';
-import { useDashboardStatistics } from './hooks/useDashboardStatistics';
+import { dashboardMockData } from './mocks';
 import {
   DashboardContent,
   StatisticsGrid,
   SummaryGrid,
 } from './styles';
+import {
+  getStatisticCardDetails,
+  getSummaryCardDetails,
+} from './utils';
 
 /**
- * Renders the main dashboard page.
+ * Renders the Dashboard using mocked data.
  */
 export const Dashboard = () => {
-  const {
-    statistics,
-    isLoading,
-    errorMessage,
-  } = useDashboardStatistics();
-
-  const {
-    items: carsByCategoryItems,
-    isLoading: isLoadingCarsByCategory,
-    errorMessage: carsByCategoryError,
-  } = useCarsByCategory();
-
-  const totalOwnersValue = isLoading
-    ? '...'
-    : statistics.totalOwners ?? '—';
-
-  const totalCarsValue = isLoading
-    ? '...'
-    : statistics.totalCars ?? '—';
-
-  const displayedCategoryItems = isLoadingCarsByCategory
-    ? carsByCategoryItems.map((item) => ({
-        ...item,
-        value: '...',
-      }))
-    : carsByCategoryItems;
-
   return (
     <DashboardContent data-testid="dashboard-page">
       <Header
@@ -49,55 +24,57 @@ export const Dashboard = () => {
         description="Overview of the car insurance application."
       />
 
-      {errorMessage && (
-        <p role="alert">{errorMessage}</p>
-      )}
+      { <StatisticsGrid>
+        {dashboardMockData.carsOwners.map((item) => {
+          const details = getStatisticCardDetails(
+            item.itemType
+          );
 
-      <StatisticsGrid>
-        <StatisticCard
-          title="Total Owners"
-          value={totalOwnersValue}
-          icon={<span>👤</span>}
-          navigationLink={ROUTE_PATHS.OWNERS}
-          data-testid="total-owners-card"
-        />
+          const Icon = details.icon;
 
-        <StatisticCard
-          title="Total Cars"
-          value={totalCarsValue}
-          icon={<span>🚗</span>}
-          navigationLink={ROUTE_PATHS.CARS}
-          data-testid="total-cars-card"
-        />
+          return (
+            <StatisticCard
+              key={item.itemType}
+              title={details.title}
+              value={item.value}
+              icon={
+                <Icon
+                  size={24}
+                  aria-hidden="true"
+                />
+              }
+              navigationLink={details.navigationLink}
+              data-testid={`statistic-card-${item.itemType}`}
+            />
+          );
+        })}
+      </StatisticsGrid> }
 
-        <StatisticCard
-          title="Insured Cars"
-          value="—"
-          icon={<span>🛡️</span>}
-          data-testid="insured-cars-card"
-        />
+       <SummaryGrid>
+        {dashboardMockData.categories.map((category) => {
+          const details = getSummaryCardDetails(
+            category.itemType
+          );
 
-        <StatisticCard
-          title="Uninsured Cars"
-          value="—"
-          icon={<span>⚠️</span>}
-          data-testid="uninsured-cars-card"
-        />
-      </StatisticsGrid>
+          const Icon = details.icon;
 
-      {carsByCategoryError && (
-        <p role="alert">{carsByCategoryError}</p>
-      )}
-
-      <SummaryGrid>
-        <SummaryCard
-          title="Cars by Category"
-          icon={<span>🚘</span>}
-          items={displayedCategoryItems}
-          navigationLink={ROUTE_PATHS.CARS}
-          data-testid="cars-by-category-card"
-        />
-      </SummaryGrid>
+          return (
+            <SummaryCard
+              key={category.itemType}
+              title={details.title}
+              icon={
+                <Icon
+                  size={24}
+                  aria-hidden="true"
+                />
+              }
+              items={category.items}
+              navigationLink={details.navigationLink}
+              data-testid={`summary-card-${category.itemType}`}
+            />
+          );
+        })}
+      </SummaryGrid> 
     </DashboardContent>
   );
 };

@@ -14,16 +14,13 @@ import { getCarHistory } from '../../api/cars/getCarHistory';
 import type { CarHistoryItem } from '../../api/cars/types';
 import { API_ERROR_MESSAGES } from '../../api/constants';
 import { getApiErrorMessage } from '../../api/errors';
-import { getOwners } from '../../api/owners/getOwners';
 import { getActivePolicy } from '../../api/policy/getActivePolicy';
 import { Header } from '../../components/Header';
 import { Loading } from '../../components/Loading';
 import { Modal } from '../../components/Modal';
 import type { SelectOption } from '../../types/common';
-
 import {
   EMPTY_CATEGORY_OPTION,
-  EMPTY_OWNER_OPTION,
 } from './constants';
 import { AddPolicyModalForm } from './components/AddPolicyModalForm';
 import { CarDetailsForm } from './components/CarDetailsForm';
@@ -51,9 +48,9 @@ import {
   getCarFormValues,
   getCategoryFieldOptions,
   getHistoryTableRows,
-  getOwnerOptions,
   getSaveCarPayload,
 } from './utils';
+import { useOwnersOptions } from './hooks/useOwnersOptions';
 
 /**
  * Coordinates car creation and car detail workflows.
@@ -90,15 +87,14 @@ export const CarDetails = () => {
     validate: validateClaimForm,
     values: claimFormValues,
   } = useClaimForm();
+  const {
+    isLoadingOwners,
+    ownerOptions,
+  } = useOwnersOptions(ownerId,isViewMode);
   const [categoryOptions, setCategoryOptions] = useState<
     SelectOption[]
   >([EMPTY_CATEGORY_OPTION]);
-  const [ownerOptions, setOwnerOptions] = useState<SelectOption[]>(
-  [EMPTY_OWNER_OPTION]
-);
-
-  const [isLoadingOwners, setIsLoadingOwners] =
-  useState(!isViewMode);
+  
   const [isLoadingCategories, setIsLoadingCategories] =
     useState(!isViewMode);
   const [isLoadingData, setIsLoadingData] = useState(isViewMode);
@@ -190,51 +186,7 @@ export const CarDetails = () => {
     };
   }, [isViewMode]);
 
-  useEffect(() => {
-  if (isViewMode) {
-    return;
-  }
-
-  let isCurrentRequest = true;
-
-  /**
-   * Loads owners for the add-car owner dropdown.
-   */
-  const fetchOwnersData = async () => {
-    setIsLoadingOwners(true);
-
-    try {
-      const ownersResponse = await getOwners({
-        page: 1,
-        per_page: 100,
-      });
-
-      if (!isCurrentRequest) {
-        return;
-      }
-
-      setOwnerOptions(
-        getOwnerOptions(ownersResponse.items)
-      );
-    } catch (error) {
-      console.error(error);
-
-      if (isCurrentRequest) {
-        setOwnerOptions(getOwnerOptions([]));
-      }
-    } finally {
-      if (isCurrentRequest) {
-        setIsLoadingOwners(false);
-      }
-    }
-  };
-
-  fetchOwnersData();
-
-  return () => {
-    isCurrentRequest = false;
-  };
-}, [isViewMode]);
+ 
 
   useEffect(() => {
     if (!isViewMode || !carId) {
@@ -643,6 +595,7 @@ export const CarDetails = () => {
             categoryFieldOptions={categoryFieldOptions}
             ownerOptions={ownerOptions}
             isViewMode={isViewMode}
+            ownerId={ownerId}
             isSubmissionInProgress={isSubmissionInProgress}
             isLoadingCategories={isLoadingCategories}
             isLoadingOwners={isLoadingOwners}
